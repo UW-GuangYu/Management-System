@@ -7,11 +7,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="springboot" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="Springboot" target="1.5" />
-      <module name="springboot" target="11" />
+      <module name="springboot" target="16" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
