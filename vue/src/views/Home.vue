@@ -24,11 +24,11 @@
       <el-table-column prop="sex" label="性别"/>
       <el-table-column prop="address" label="地址"/>
 
-      <el-table-column fixed="right" label="">
-        <template #default>
-          <el-button size="mini" @click="handleEdit">编辑</el-button>
+      <el-table-column fixed="right" label="操作" >
+        <template #default="scope">
+          <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
 
-          <el-popconfirm title="确认删除吗?">
+          <el-popconfirm title="确认删除吗?" @confirm="handleDelete(scope.row.id)">
             <template #reference>
               <el-button size="mini" type="danger">删除</el-button>
             </template>
@@ -110,32 +110,83 @@ export default {
     this.load()
   },
   methods: {
-    handleEdit() {
-
+    handleDelete(id) {
+      console.log(id)
+      request.delete("/api/user/" + id).then(res => {
+        if (res.code === '0') {
+          this.$messageBox({
+            type: "success",
+            message: "删除成功"
+          })
+        } else {
+          this.$messageBox({
+            type: "error",
+            message: res.msg
+          })
+        }
+        this.load()     //删除之后刷新页面数据
+      })
     },
-    handleSizeChange() {
-
+    handleEdit(row) {
+      this.form = JSON.parse(JSON.stringify(row))
+      this.dialogVisible = true;
     },
-    handleCurrentChange() {
-
+    handleSizeChange(pageSize) {  //改变当前每页的个数时触发
+      this.pageSize = pageSize
+      this.load()
+    },
+    handleCurrentChange() {   //改变当前页码时触发
+      this.load()
     },
     add() {
       this.dialogVisible = true;
       this.form = {};
     },
-    save(){
-      request.post("/api/user", this.form).then(res => {
-        console.log(res);
-      })
+    save() {
+      if (this.form.id) {  //更新
+        request.put("/api/user", this.form).then(res => {
+          console.log(res)
+          if (res.code === '0') {
+            this.$messageBox({
+              type: "success",
+              message: "更新成功"
+            })
+          } else {
+            this.$messageBox({
+              type: "error",
+              message: res.msg
+            })
+          }
+          this.load()  //刷新表格数据
+          this.dialogVisible = false    //关闭弹窗
+        })
+      } else {     //新增
+        request.post("/api/user", this.form).then(res => {
+          console.log(res);
+          if (res.code === '0') {
+            this.$messageBox({
+              type: "success",
+              message: "新增成功"
+            })
+          } else {
+            this.$messageBox({
+              type: "error",
+              message: res.msg
+            })
+          }
+          this.load()
+          this.dialogVisible = false
+        })
+      }
     },
-    load(){
+    load() {
       request.get("api/user", {
         params: {
           pageNum: this.currentPage,
           pageSize: this.pageSize,
           search: this.search
         }
-      }).then(res =>{
+      }).then(res => {
         console.log(res);
         this.tableData = res.data.records;
         this.total = res.data.total;
