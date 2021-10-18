@@ -20,6 +20,8 @@ public class UserController {
     @Resource
     UserMapper userMapper;
 
+
+//    数据库--新增操作
     @PostMapping
     public Result<?> save(@RequestBody User user){
         if (user.getPassword() == null){
@@ -29,6 +31,7 @@ public class UserController {
         return Result.success();
     }
 
+//    数据库--查询操作
     @GetMapping
     public Result<?> findPage(@RequestParam(defaultValue = "1") Integer pageNum,
                               @RequestParam(defaultValue = "10") Integer pageSize,
@@ -39,5 +42,19 @@ public class UserController {
         }
         Page<User> userPage = userMapper.selectPage(new Page<>(pageNum, pageSize), wrapper);
         return Result.success(userPage);
+    }
+
+//    数据库--修改（更新）操作
+    @PutMapping
+    public Result<?> update(@RequestBody User user){
+        userMapper.updateById(user);
+        return Result.success();
+    }
+
+//    数据库--删除操作
+    @DeleteMapping("/{id}")
+    public Result<?> delete(@PathVariable Long id){
+        userMapper.deleteById(id);
+        return Result.success();
     }
 }
