@@ -63,6 +63,11 @@
         <el-form-item label="出版时间">
           <el-date-picker v-model="form.createTime" style="width: 80%" clearable value-format="YYYY-MM-DD" type="date"></el-date-picker>
         </el-form-item>
+        <el-form-item label="封面">
+          <el-upload action="http://localhost:9090/files/upload" :onsuccess="filesUploadSuccess">
+            <el-button size="small" type="primary">Click to upload</el-button>
+          </el-upload>
+        </el-form-item>
       </el-form>
       <template #footer>
       <span class="dialog-footer">
@@ -104,6 +109,9 @@ export default {
     this.load()
   },
   methods: {
+    filesUploadSuccess(res){
+      console.log(res)
+    },
     handleDelete(id) {
       request.delete("/book/" + id).then(res => {
         console.log(res)
