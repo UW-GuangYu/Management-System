@@ -1,6 +1,8 @@
 import axios from 'axios'
+import router from "@/router";
 
 const request = axios.create({
+    baseURL: "/api",
     timeout: 5000
 })
 
@@ -11,6 +13,12 @@ request.interceptors.request.use(config =>{
     config.headers['Content-Type'] = 'application/json;charset=uft-8';
 
     //config.header['token'] = user.token; //设置请求头
+    //取出sessionStorage里缓存的用户信息
+    let userJson = sessionStorage.getItem("user")       //请求拦截器
+    if(!userJson){
+        router.push("/login")
+    }
+
     return config
 },  error => {
     return Promise.reject(error)
