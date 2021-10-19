@@ -6,12 +6,22 @@ const routes = [
         path: '/',
         name: 'Layout',
         component: Layout,
-        redirect: '/home',      //页面的自动跳转，当什么都不输入的时候 需要显示主体区域
+        redirect: '/user',      //页面的自动跳转，当什么都不输入的时候 需要显示主体区域
         children: [             //这里用children进行二次路由，可以创建不同的新的主体，在保持原有header和aside的情况下。
             {
-                path: 'home',
-                name: 'Home',
-                component: () => import("@/views/Home")
+                path: '/user',
+                name: 'User',
+                component: () => import("@/views/User")
+            },
+            {
+                path: '/book',
+                name: 'Book',
+                component: () => import("@/views/Book")
+            },
+            {
+                path: '/person',
+                name: 'Person',
+                component: () => import("@/views/Person")
             }
         ]
     },

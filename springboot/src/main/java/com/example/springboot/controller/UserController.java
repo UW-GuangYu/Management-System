@@ -42,7 +42,7 @@ public class UserController {
             return Result.error("-1", "用户名或密码错误");
         }
         else{
-            return Result.success();
+            return Result.success(res);
         }
     }
 

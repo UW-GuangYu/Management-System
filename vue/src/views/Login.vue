@@ -43,16 +43,21 @@ export default {
       }
     }
   },
+  created() {
+    sessionStorage.removeItem("user")       //每次进入新的登录界面，移除缓存信息
+  },
   methods: {
     login() {
       this.$refs['form'].validate( (valid) => {
         if(valid) {
-          request.post("/api/user/login", this.form).then(res => {
+          request.post("/user/login", this.form).then(res => {
+            console.log(res)
             if (res.code === '0') {
               this.$messageBox({
                 type: "success",
                 message: "登录成功"
               })
+              sessionStorage.setItem("user", JSON.stringify(res.data))   //缓存用户信息
               this.$router.push("/")  //登录成功之后进行页面的跳转，跳到主页。
             } else {
               this.$messageBox({

@@ -4,13 +4,13 @@
       <div style="color: white; font-size: 30px; text-align: center; padding: 30px 0">欢迎注册</div>
       <el-form ref="form" :model="form" :rules="rules">
         <el-form-item prop="username">
-          <el-input prefix-icon="el-icon-user-solid" v-model="form.username"></el-input>
+          <el-input placeholder="用户名" prefix-icon="el-icon-user-solid" v-model="form.username"></el-input>
         </el-form-item>
         <el-form-item prop="password">
-          <el-input prefix-icon="el-icon-lock" v-model="form.password" show-password></el-input>
+          <el-input placeholder="密码" prefix-icon="el-icon-lock" v-model="form.password" show-password></el-input>
         </el-form-item>
         <el-form-item prop="confirm">
-          <el-input prefix-icon="el-icon-lock" v-model="form.confirm" show-password></el-input>
+          <el-input placeholder="确认密码" prefix-icon="el-icon-lock" v-model="form.confirm" show-password></el-input>
         </el-form-item>
         <el-form-item>
           <el-button style="width: 100%" type="primary" @click="register">注册</el-button>
@@ -64,7 +64,7 @@ export default {
       }
       this.$refs['form'].validate((valid) => {
         if (valid) {
-          request.post("/api/user/register", this.form).then(res => {
+          request.post("/user/register", this.form).then(res => {
             if (res.code === '0') {
               this.$messageBox({
                 type: "success",
