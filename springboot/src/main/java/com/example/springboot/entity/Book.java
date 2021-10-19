@@ -20,4 +20,5 @@ public class Book {
     private String author;
     @JsonFormat(pattern="YYYY-MM-dd", timezone="GMT+8")
     private Date createTime;
+    private String cover;
 }

@@ -22,6 +22,14 @@
       <el-table-column prop="price" label="价格"/>
       <el-table-column prop="author" label="作者"/>
       <el-table-column prop="createTime" label="出版时间"/>
+      <el-table-column label="封面">
+        <template #default="scope">
+          <el-image style="width: 100px; height: 100px"
+                    :src="scope.row.cover"
+                    :preview-src-list="[scope.row.cover]">
+          </el-image>
+        </template>
+      </el-table-column>
 
       <el-table-column fixed="right" label="操作" >
         <template #default="scope">
@@ -64,7 +72,7 @@
           <el-date-picker v-model="form.createTime" style="width: 80%" clearable value-format="YYYY-MM-DD" type="date"></el-date-picker>
         </el-form-item>
         <el-form-item label="封面">
-          <el-upload action="http://localhost:9090/files/upload" :onsuccess="filesUploadSuccess">
+          <el-upload ref="upload" action="http://localhost:9090/files/upload" :on-success="filesUploadSuccess">
             <el-button size="small" type="primary">Click to upload</el-button>
           </el-upload>
         </el-form-item>
@@ -111,6 +119,7 @@ export default {
   methods: {
     filesUploadSuccess(res){
       console.log(res)
+      this.form.cover = res.data
     },
     handleDelete(id) {
       request.delete("/book/" + id).then(res => {
@@ -132,6 +141,9 @@ export default {
     handleEdit(row) {
       this.form = JSON.parse(JSON.stringify(row))
       this.dialogVisible = true;
+      this.$nextTick(() =>{
+        this.$refs['upload'].clearFiles()  //清除历史文件列表
+      })
     },
     handleSizeChange(pageSize) {  //改变当前每页的个数时触发
       this.pageSize = pageSize
@@ -143,6 +155,9 @@ export default {
     add() {
       this.dialogVisible = true;
       this.form = {};
+      this.$nextTick(() =>{
+        this.$refs['upload'].clearFiles()  //清除历史文件列表
+      })
     },
     save() {
       if (this.form.id) {  //更新

@@ -24,6 +24,9 @@ public class BookController {
     //    数据库--新增操作
     @PostMapping
     public Result<?> save(@RequestBody Book book) {
+        if (book.getName() == null){
+            book.setName("未命名");
+        }
         bookMapper.insert(book);
         return Result.success();
     }
