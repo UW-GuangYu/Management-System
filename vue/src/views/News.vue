@@ -25,7 +25,7 @@
       <el-table-column fixed="right" label="操作" >
         <template #default="scope">
           <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
-
+          <el-button size="mini" @click="handleDetail(scope.row)">详情</el-button>
           <el-popconfirm title="确认删除吗?" @confirm="handleDelete(scope.row.id)">
             <template #reference>
               <el-button size="mini" type="danger">删除</el-button>
@@ -54,12 +54,7 @@
           <el-input v-model="form.title" style="width: 50%"></el-input>
         </el-form-item>
 
-        <div id="div1">
-
-        </div>
-<!--        <el-form-item label="作者">-->
-<!--          <el-input v-model="form.author" style="width: 80%"></el-input>-->
-<!--        </el-form-item>-->
+        <div id="div1"></div>
       </el-form>
       <template #footer>
       <span class="dialog-footer">
@@ -69,6 +64,11 @@
       </template>
     </el-dialog>
 
+    <el-dialog v-model="vis" title="详情" width="50%">
+      <el-card>
+        <div v-html="detail.content" style="min-height: 100px"></div>
+      </el-card>
+    </el-dialog>
   </div>
 </template>
 
@@ -83,6 +83,8 @@
 import request from "@/utils/request";
 import E from "wangeditor";
 
+let editor;
+
 export default {
   name: "News",
   components: {},
@@ -95,7 +97,9 @@ export default {
       currentPage: 1,
       pageSize: 10,
       total: 0,
-      tableData: []
+      tableData: [],
+      detail: {},
+      vis: false
     }
   },
   created() {
@@ -106,9 +110,12 @@ export default {
       console.log(res)
       this.form.cover = res.data
     },
+    handleDetail(row){
+      this.detail = row
+      this.vis = true;
+    },
     handleDelete(id) {
       request.delete("/news/" + id).then(res => {
-        console.log(res)
         if (res.code === '0') {
           this.$messageBox({
             type: "success",
@@ -126,9 +133,13 @@ export default {
     handleEdit(row) {
       this.form = JSON.parse(JSON.stringify(row))
       this.dialogVisible = true;
-      // this.$nextTick(() =>{
-      //   this.$refs['upload'].clearFiles()  //清除历史文件列表
-      // })
+
+      //关联弹窗里面的div, new 一个 wangEditor 文本编辑器
+      this.$nextTick( () => {
+        editor = new E('#div1')
+        editor.create()
+        editor.txt.html(row.content)
+      })
     },
     handleSizeChange(pageSize) {  //改变当前每页的个数时触发
       this.pageSize = pageSize
@@ -140,14 +151,21 @@ export default {
     add() {
       this.dialogVisible = true;
       this.form = {};
-      // this.$nextTick(() =>{
-      //   this.$refs['upload'].clearFiles()  //清除历史文件列表
-      // })
+
+      //关联弹窗里面的div, new 一个 wangEditor 文本编辑器
+      this.$nextTick( () => {
+        editor = new E('#div1')
+        // 配置 server 接口地址
+        editor.config.uploadImgServer = 'http://localhost:9090/files/editor/upload'
+        editor.config.uploadFileName = 'file'   //设置上传参数名称
+        editor.create()
+      })
     },
     save() {
+      this.form.content = editor.txt.html()   //获取 编辑器里面的值，然后赋予到实体对象中。
+
       if (this.form.id) {  //更新
         request.put("/news", this.form).then(res => {
-          console.log(res)
           if (res.code === '0') {
             this.$messageBox({
               type: "success",
@@ -163,8 +181,10 @@ export default {
           this.dialogVisible = false    //关闭弹窗
         })
       } else {     //新增
+        let userStr = sessionStorage.getItem("user") || "{}"
+        let user = JSON.parse(userStr)
+        this.form.author = user.nickName
         request.post("/news", this.form).then(res => {
-          console.log(res);
           if (res.code === '0') {
             this.$messageBox({
               type: "success",

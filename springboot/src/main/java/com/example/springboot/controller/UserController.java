@@ -56,6 +56,13 @@ public class UserController {
         return Result.success();
     }
 
+    // 通过id查询用户信息
+    @GetMapping("/{id}")
+    public Result<?> getById(@PathVariable Long id){
+        return Result.success(userMapper.selectById(id));
+    }
+
+
     //    数据库--查询操作
     @GetMapping
     public Result<?> findPage(@RequestParam(defaultValue = "1") Integer pageNum,

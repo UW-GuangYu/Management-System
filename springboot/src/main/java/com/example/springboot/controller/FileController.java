@@ -4,6 +4,8 @@ package com.example.springboot.controller;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
 import com.example.springboot.common.Result;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +37,24 @@ public class FileController {
         return Result.success(ip + ":" + port + "/files/" + flag);        //返回结果 url
     }
 
+    //    文件上传功能接口（接受wangEditor发来的图片   富文本文件上传接口）
+    @PostMapping("/editor/upload")
+    public JSONObject editorUpload(MultipartFile file) throws IOException {
+        String originalFilename = file.getOriginalFilename();       //获取文件名称
+//        定义文件的唯一标识（前缀）IdUtil
+        String flag = IdUtil.fastSimpleUUID();
+        String rootFilePath = System.getProperty("user.dir") + "/springboot/src/main/resources/files/" + flag + "_" + originalFilename; //获取上传的路径
+        FileUtil.writeBytes(file.getBytes(), rootFilePath);   //用工具集将文件存入（写入）指定路径
+        String url = ip + ":" + port + "/files/" + flag;
+        JSONObject json = new JSONObject();
+        json.set("errno", 0);
+        JSONArray arr = new JSONArray();
+        JSONObject data = new JSONObject();
+        arr.add(data);
+        data.set("url", url);
+        json.set("data", arr);
+        return json;        //返回结果 url
+    }
 
 //    文件下载接口
     @GetMapping("/{flag}")

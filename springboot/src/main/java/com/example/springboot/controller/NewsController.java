@@ -10,6 +10,7 @@ import com.example.springboot.mapper.NewsMapper;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Date;
 
 
 @RestController
@@ -24,6 +25,7 @@ public class NewsController {
     //    数据库--新增操作
     @PostMapping
     public Result<?> save(@RequestBody News news) {
+        news.setTime(new Date());
         newsMapper.insert(news);
         return Result.success();
     }
