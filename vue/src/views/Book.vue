@@ -72,7 +72,7 @@
           <el-date-picker v-model="form.createTime" style="width: 80%" clearable value-format="YYYY-MM-DD" type="date"></el-date-picker>
         </el-form-item>
         <el-form-item label="封面">
-          <el-upload ref="upload" action="http://localhost:9090/files/upload" :on-success="filesUploadSuccess">
+          <el-upload ref="upload" :action="uploadUrl" :on-success="filesUploadSuccess">
             <el-button size="small" type="primary">Click to upload</el-button>
           </el-upload>
         </el-form-item>
@@ -110,7 +110,8 @@ export default {
       currentPage: 1,
       pageSize: 10,
       total: 0,
-      tableData: []
+      tableData: [],
+      uploadUrl: 'http://' + window.server.filesUploadUrl + ':9090/files/upload'
     }
   },
   created() {

@@ -156,7 +156,7 @@ export default {
       this.$nextTick( () => {
         editor = new E('#div1')
         // 配置 server 接口地址
-        editor.config.uploadImgServer = 'http://localhost:9090/files/editor/upload'
+        editor.config.uploadImgServer = 'http://' + window.server.filesUploadUrl + ':9090/files/editor/upload'
         editor.config.uploadFileName = 'file'   //设置上传参数名称
         editor.create()
       })
