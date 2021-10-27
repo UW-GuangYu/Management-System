@@ -24,7 +24,8 @@ public class FileController {
     @Value("${server.port}")
     private String port;
 
-    private static final String ip = "http://localhost";
+    @Value("${file.ip}")
+    private String ip;
 
 //    文件上传功能接口（接受前端发来的文件）
     @PostMapping("/upload")
