@@ -34,7 +34,7 @@ public class FileController {
         String flag = IdUtil.fastSimpleUUID();
         String rootFilePath = System.getProperty("user.dir") + "/springboot/src/main/resources/files/" + flag + "_" + originalFilename; //获取上传的路径
         FileUtil.writeBytes(file.getBytes(), rootFilePath);   //用工具集将文件存入（写入）指定路径
-        return Result.success(ip + ":" + port + "/files/" + flag);        //返回结果 url
+        return Result.success("http://" + ip + ":" + port + "/files/" + flag);        //返回结果 url
     }
 
     //    文件上传功能接口（接受wangEditor发来的图片   富文本文件上传接口）
@@ -45,7 +45,7 @@ public class FileController {
         String flag = IdUtil.fastSimpleUUID();
         String rootFilePath = System.getProperty("user.dir") + "/springboot/src/main/resources/files/" + flag + "_" + originalFilename; //获取上传的路径
         FileUtil.writeBytes(file.getBytes(), rootFilePath);   //用工具集将文件存入（写入）指定路径
-        String url = ip + ":" + port + "/files/" + flag;
+        String url = "http://" + ip + ":" + port + "/files/" + flag;
         JSONObject json = new JSONObject();
         json.set("errno", 0);
         JSONArray arr = new JSONArray();
