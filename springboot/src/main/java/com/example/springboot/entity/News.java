@@ -4,18 +4,19 @@ package com.example.springboot.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
-@TableName("user")
+import java.util.Date;
+
+@TableName("news")
 @Data
-public class User {
+public class News {
     @TableId(type = IdType.AUTO)
     private Integer id;
-    private String username;
-    private String password;
-    private String nickName;
-    private Integer age;
-    private String sex;
-    private String address;
-    private Integer role;
+    private String title;
+    private String content;
+    private String author;
+    @JsonFormat(pattern="YYYY-MM-dd HH:mm:ss", timezone="GMT+8")
+    private Date time;
 }

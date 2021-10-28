@@ -18,23 +18,14 @@
 
     <el-table :data="tableData" border stripe style="width: 100%">
       <el-table-column prop="id" label="ID" sortable/>
-      <el-table-column prop="name" label="名称"/>
-      <el-table-column prop="price" label="价格"/>
+      <el-table-column prop="title" label="标题"/>
       <el-table-column prop="author" label="作者"/>
-      <el-table-column prop="createTime" label="出版时间"/>
-      <el-table-column label="封面">
-        <template #default="scope">
-          <el-image style="width: 100px; height: 100px"
-                    :src="scope.row.cover"
-                    :preview-src-list="[scope.row.cover]">
-          </el-image>
-        </template>
-      </el-table-column>
+      <el-table-column prop="time" label="发布时间"/>
 
       <el-table-column fixed="right" label="操作" >
         <template #default="scope">
           <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
-
+          <el-button size="mini" @click="handleDetail(scope.row)">详情</el-button>
           <el-popconfirm title="确认删除吗?" @confirm="handleDelete(scope.row.id)">
             <template #reference>
               <el-button size="mini" type="danger">删除</el-button>
@@ -57,25 +48,13 @@
       </el-pagination>
     </div>
 
-    <el-dialog v-model="dialogVisible" title="提示" width="30%">
+    <el-dialog v-model="dialogVisible" title="提示" width="50%">
       <el-form :model="form" label-width="120px">
-        <el-form-item label="名称">
-          <el-input v-model="form.name" style="width: 80%"></el-input>
+        <el-form-item label="标题">
+          <el-input v-model="form.title" style="width: 50%"></el-input>
         </el-form-item>
-        <el-form-item label="价格">
-          <el-input v-model="form.price" style="width: 80%"></el-input>
-        </el-form-item>
-        <el-form-item label="作者">
-          <el-input v-model="form.author" style="width: 80%"></el-input>
-        </el-form-item>
-        <el-form-item label="出版时间">
-          <el-date-picker v-model="form.createTime" style="width: 80%" clearable value-format="YYYY-MM-DD" type="date"></el-date-picker>
-        </el-form-item>
-        <el-form-item label="封面">
-          <el-upload ref="upload" :action="uploadUrl" :on-success="filesUploadSuccess">
-            <el-button size="small" type="primary">Click to upload</el-button>
-          </el-upload>
-        </el-form-item>
+
+        <div id="div1"></div>
       </el-form>
       <template #footer>
       <span class="dialog-footer">
@@ -85,6 +64,11 @@
       </template>
     </el-dialog>
 
+    <el-dialog v-model="vis" title="详情" width="50%">
+      <el-card>
+        <div v-html="detail.content" style="min-height: 100px"></div>
+      </el-card>
+    </el-dialog>
   </div>
 </template>
 
@@ -97,9 +81,12 @@
 <script>
 
 import request from "@/utils/request";
+import E from "wangeditor";
+
+let editor;
 
 export default {
-  name: "Book",
+  name: "News",
   components: {},
 
   data() {
@@ -111,7 +98,8 @@ export default {
       pageSize: 10,
       total: 0,
       tableData: [],
-      uploadUrl: 'http://' + window.server.filesUploadUrl + ':9090/files/upload'
+      detail: {},
+      vis: false
     }
   },
   created() {
@@ -122,9 +110,12 @@ export default {
       console.log(res)
       this.form.cover = res.data
     },
+    handleDetail(row){
+      this.detail = row
+      this.vis = true;
+    },
     handleDelete(id) {
-      request.delete("/book/" + id).then(res => {
-        console.log(res)
+      request.delete("/news/" + id).then(res => {
         if (res.code === '0') {
           this.$messageBox({
             type: "success",
@@ -142,8 +133,12 @@ export default {
     handleEdit(row) {
       this.form = JSON.parse(JSON.stringify(row))
       this.dialogVisible = true;
-      this.$nextTick(() =>{
-        this.$refs['upload'].clearFiles()  //清除历史文件列表
+
+      //关联弹窗里面的div, new 一个 wangEditor 文本编辑器
+      this.$nextTick( () => {
+        editor = new E('#div1')
+        editor.create()
+        editor.txt.html(row.content)
       })
     },
     handleSizeChange(pageSize) {  //改变当前每页的个数时触发
@@ -156,14 +151,21 @@ export default {
     add() {
       this.dialogVisible = true;
       this.form = {};
-      this.$nextTick(() =>{
-        this.$refs['upload'].clearFiles()  //清除历史文件列表
+
+      //关联弹窗里面的div, new 一个 wangEditor 文本编辑器
+      this.$nextTick( () => {
+        editor = new E('#div1')
+        // 配置 server 接口地址
+        editor.config.uploadImgServer = 'http://' + window.server.filesUploadUrl + ':9090/files/editor/upload'
+        editor.config.uploadFileName = 'file'   //设置上传参数名称
+        editor.create()
       })
     },
     save() {
+      this.form.content = editor.txt.html()   //获取 编辑器里面的值，然后赋予到实体对象中。
+
       if (this.form.id) {  //更新
-        request.put("/book", this.form).then(res => {
-          console.log(res)
+        request.put("/news", this.form).then(res => {
           if (res.code === '0') {
             this.$messageBox({
               type: "success",
@@ -179,8 +181,10 @@ export default {
           this.dialogVisible = false    //关闭弹窗
         })
       } else {     //新增
-        request.post("/book", this.form).then(res => {
-          console.log(res);
+        let userStr = sessionStorage.getItem("user") || "{}"
+        let user = JSON.parse(userStr)
+        this.form.author = user.nickName
+        request.post("/news", this.form).then(res => {
           if (res.code === '0') {
             this.$messageBox({
               type: "success",
@@ -198,7 +202,7 @@ export default {
       }
     },
     load() {
-      request.get("/book", {
+      request.get("/news", {
         params: {
           pageNum: this.currentPage,
           pageSize: this.pageSize,

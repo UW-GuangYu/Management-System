@@ -23,6 +23,12 @@
       <el-table-column prop="age" label="年龄"/>
       <el-table-column prop="sex" label="性别"/>
       <el-table-column prop="address" label="地址"/>
+      <el-table-column label="角色">
+        <template #default="scope">
+          <span v-if="scope.row.role === 1">管理员</span>
+          <span v-if="scope.row.role === 2">普通用户</span>
+        </template>
+      </el-table-column>
 
       <el-table-column fixed="right" label="操作" >
         <template #default="scope">
@@ -68,6 +74,10 @@
         </el-form-item>
         <el-form-item label="地址">
           <el-input type="textarea" v-model="form.address" style="width: 80%"></el-input>
+        </el-form-item>
+        <el-form-item label="角色">
+          <el-radio v-model="form.role" label="1">管理员</el-radio>
+          <el-radio v-model="form.role" label="2">普通用户</el-radio>
         </el-form-item>
       </el-form>
       <template #footer>
