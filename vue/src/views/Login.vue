@@ -12,7 +12,7 @@
         <el-form-item>
           <div style="display: flex">
             <el-input prefix-icon="el-icon-key" v-model="form.validCode" style="width:50%" placeholder="请输入验证码"></el-input>
-            <ValidCode @input="createValidCode" />
+            <ValidCode ref="child" @input="createValidCode" />
           </div>
         </el-form-item>
         <el-form-item>
@@ -73,6 +73,7 @@ export default {
               type: "error",
               message: "验证码错误"
             })
+            this.$refs.child.refreshCode()
             return
           }
           request.post("/user/login", this.form).then(res => {
