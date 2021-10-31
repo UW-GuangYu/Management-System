@@ -4,8 +4,6 @@
     <!--      功能区域-->
     <div style="margin: 10px 0">
       <el-button type="primary" @click="add">新增</el-button>
-      <el-button type="primary">导入</el-button>
-      <el-button type="primary">导出</el-button>
     </div>
 
 
@@ -32,7 +30,8 @@
 
       <el-table-column fixed="right" label="操作" >
         <template #default="scope">
-          <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
+          <el-button size="mini" type="success" @click="showBooks(scope.row.bookList)">查看图书列表</el-button>
+          <el-button size="mini" type="primary" @click="handleEdit(scope.row)">编辑</el-button>
 
           <el-popconfirm title="确认删除吗?" @confirm="handleDelete(scope.row.id)">
             <template #reference>
@@ -88,6 +87,14 @@
       </template>
     </el-dialog>
 
+    <el-dialog title="用户拥有的图书列表" v-model="bookVis" width="30%">
+      <el-table :data="bookList" stripe border>
+        <el-table-column prop="id" label="ID"></el-table-column>
+        <el-table-column prop="name" label="名称"></el-table-column>
+        <el-table-column prop="price" label="价格"></el-table-column>
+      </el-table>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -113,7 +120,9 @@ export default {
       currentPage: 1,
       pageSize: 10,
       total: 0,
-      tableData: []
+      tableData: [],
+      bookList: [],
+      bookVis: false
     }
   },
   created() {
@@ -135,6 +144,10 @@ export default {
         }
         this.load()     //删除之后刷新页面数据
       })
+    },
+    showBooks(books){
+      this.bookList = books
+      this.bookVis = true
     },
     handleEdit(row) {
       this.form = JSON.parse(JSON.stringify(row))

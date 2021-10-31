@@ -4,8 +4,6 @@
     <!--      功能区域-->
     <div style="margin: 10px 0">
       <el-button type="primary" @click="add">新增</el-button>
-      <el-button type="primary">导入</el-button>
-      <el-button type="primary">导出</el-button>
     </div>
 
 
@@ -136,7 +134,12 @@ export default {
 
       //关联弹窗里面的div, new 一个 wangEditor 文本编辑器
       this.$nextTick( () => {
+        if (editor != null){
+          editor.destroy();
+        }
         editor = new E('#div1')
+        editor.config.uploadImgServer = 'http://' + window.server.filesUploadUrl + ':9090/files/editor/upload'
+        editor.config.uploadFileName = 'file'   //设置上传参数名称
         editor.create()
         editor.txt.html(row.content)
       })
@@ -154,6 +157,9 @@ export default {
 
       //关联弹窗里面的div, new 一个 wangEditor 文本编辑器
       this.$nextTick( () => {
+        if (editor != null){
+          editor.destroy();
+        }
         editor = new E('#div1')
         // 配置 server 接口地址
         editor.config.uploadImgServer = 'http://' + window.server.filesUploadUrl + ':9090/files/editor/upload'

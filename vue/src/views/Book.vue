@@ -4,8 +4,11 @@
     <!--      功能区域-->
     <div style="margin: 10px 0">
       <el-button type="primary" @click="add">新增</el-button>
-      <el-button type="primary">导入</el-button>
-      <el-button type="primary">导出</el-button>
+      <el-popconfirm title="确定删除吗?" @confirm="deleteBatch">
+        <template #reference>
+          <el-button type="danger">批量删除</el-button>
+        </template>
+      </el-popconfirm>
     </div>
 
 
@@ -16,7 +19,8 @@
     </div>
 
 
-    <el-table :data="tableData" border stripe style="width: 100%">
+    <el-table :data="tableData" border stripe style="width: 100%" @selection-change="handleSelectionChange">
+      <el-table-column type="selection" width="55" />
       <el-table-column prop="id" label="ID" sortable/>
       <el-table-column prop="name" label="名称"/>
       <el-table-column prop="price" label="价格"/>
@@ -111,7 +115,8 @@ export default {
       pageSize: 10,
       total: 0,
       tableData: [],
-      uploadUrl: 'http://' + window.server.filesUploadUrl + ':9090/files/upload'
+      uploadUrl: 'http://' + window.server.filesUploadUrl + ':9090/files/upload',
+      ids: []
     }
   },
   created() {
@@ -159,6 +164,33 @@ export default {
       this.$nextTick(() =>{
         this.$refs['upload'].clearFiles()  //清除历史文件列表
       })
+    },
+    deleteBatch(){
+      if (!this.ids.length){
+        this.$messageBox({
+          type: "warning",
+          message: "请选择数据"
+        })
+        return
+      }
+      request.post("/book/deleteBatch", this.ids).then(res =>{
+        if (res.code === '0'){
+          this.$messageBox({
+            type: "success",
+            message: "批量删除成功"
+          })
+          this.load()
+        }
+        else{
+          this.$messageBox({
+            type: "error",
+            message: res.msg
+          })
+        }
+      })
+    },
+    handleSelectionChange(val){
+      this.ids = val.map(v => v.id)      //map方法把对象集合变成值数组
     },
     save() {
       if (this.form.id) {  //更新
