@@ -2,8 +2,13 @@
   <div style="padding: 10px">
 
     <!--      功能区域-->
-    <div style="margin: 10px 0">
+    <div v-if="user.role === 1" style="margin: 10px 0">
       <el-button type="primary" @click="add">新增</el-button>
+      <el-popconfirm title="确定删除吗?" @confirm="deleteBatch">
+        <template #reference>
+          <el-button type="danger">批量删除</el-button>
+        </template>
+      </el-popconfirm>
     </div>
 
 
@@ -14,7 +19,8 @@
     </div>
 
 
-    <el-table :data="tableData" border stripe style="width: 100%">
+    <el-table :data="tableData" border stripe style="width: 100%" @selection-change="handleSelectionChange">
+      <el-table-column type="selection" width="55" />
       <el-table-column prop="id" label="ID" sortable/>
       <el-table-column prop="title" label="标题"/>
       <el-table-column prop="author" label="作者"/>
@@ -22,13 +28,15 @@
 
       <el-table-column fixed="right" label="操作" >
         <template #default="scope">
-          <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button size="mini" @click="handleDetail(scope.row)">详情</el-button>
-          <el-popconfirm title="确认删除吗?" @confirm="handleDelete(scope.row.id)">
+          <el-button v-if="user.role === 1" size="mini" @click="handleEdit(scope.row)">编辑</el-button>
+
+          <el-popconfirm v-if="user.role === 1" title="确认删除吗?" @confirm="handleDelete(scope.row.id)">
             <template #reference>
               <el-button size="mini" type="danger">删除</el-button>
             </template>
           </el-popconfirm>
+
+          <el-button size="mini" @click="handleDetail(scope.row)">查看</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -71,11 +79,6 @@
 </template>
 
 
-<style>
-
-</style>
-
-
 <script>
 
 import request from "@/utils/request";
@@ -97,16 +100,54 @@ export default {
       total: 0,
       tableData: [],
       detail: {},
-      vis: false
+      vis: false,
+      ids: [],
+      user: {}
     }
   },
   created() {
+    let userStr = sessionStorage.getItem("user") || "{}"
+    this.user = JSON.parse(userStr)
+    //基于用户的id， 再查询用户数据库信息,确保安全
+    request.get("/user/" + this.user.id).then(res => {
+      console.log(res)
+      if (res.code === "0"){
+        this.user = res.data
+      }
+    })
     this.load()
   },
   methods: {
     filesUploadSuccess(res){
       console.log(res)
       this.form.cover = res.data
+    },
+    deleteBatch(){
+      if (!this.ids.length){
+        this.$messageBox({
+          type: "warning",
+          message: "请选择数据"
+        })
+        return
+      }
+      request.post("/news/deleteBatch", this.ids).then(res =>{
+        if (res.code === '0'){
+          this.$messageBox({
+            type: "success",
+            message: "批量删除成功"
+          })
+          this.load()
+        }
+        else{
+          this.$messageBox({
+            type: "error",
+            message: res.msg
+          })
+        }
+      })
+    },
+    handleSelectionChange(val){
+      this.ids = val.map(v => v.id)      //map方法把对象集合变成值数组
     },
     handleDetail(row){
       this.detail = row
@@ -189,7 +230,7 @@ export default {
       } else {     //新增
         let userStr = sessionStorage.getItem("user") || "{}"
         let user = JSON.parse(userStr)
-        this.form.author = user.nickName
+        this.form.author = user.username
         request.post("/news", this.form).then(res => {
           if (res.code === '0') {
             this.$messageBox({

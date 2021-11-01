@@ -18,6 +18,11 @@
         <el-form-item>
           <el-button style="width: 100%" type="primary" @click="login">登录</el-button>
         </el-form-item>
+        <el-form-item>
+          <div style="display: flex">
+            <el-link href="/register" target="_blank">新用户注册</el-link>
+          </div>
+        </el-form-item>
       </el-form>
     </div>
   </div>

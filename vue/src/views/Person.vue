@@ -25,6 +25,7 @@
       </el-form>
       <div style="text-align: center">
         <el-button type="primary" @click="update">保存</el-button>
+        <el-button type="primary" @click="refresh">刷新</el-button>
       </div>
     </el-card>
   </div>
@@ -63,6 +64,9 @@ export default {
           })
         }
       })
+    },
+    refresh(){
+      this.$router.go(0)
     }
   }
 }

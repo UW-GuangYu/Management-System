@@ -22,30 +22,22 @@
     <el-table :data="tableData" border stripe style="width: 100%" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" />
       <el-table-column prop="id" label="ID" sortable/>
-      <el-table-column prop="name" label="名称"/>
+      <el-table-column prop="category" label="类型"/>
+      <el-table-column prop="productId" label="产品ID"/>
       <el-table-column prop="price" label="价格"/>
-      <el-table-column prop="author" label="作者"/>
-      <el-table-column prop="createTime" label="出版时间"/>
-      <el-table-column label="封面">
-        <template #default="scope">
-          <el-image style="width: 100px; height: 100px"
-                    :src="scope.row.cover"
-                    :preview-src-list="[scope.row.cover]">
-          </el-image>
-        </template>
-      </el-table-column>
+      <el-table-column prop="username" label="买家姓名"/>
+      <el-table-column prop="userId" label="买家ID"/>
+      <el-table-column prop="createTime" label="下单时间"/>
 
       <el-table-column fixed="right" label="操作">
         <template #default="scope">
-          <el-button v-if="user.role === 1" size="mini" @click="handleEdit(scope.row)">编辑</el-button>
+          <el-button size="mini" @click="handleEdit(scope.row)">编辑</el-button>
 
-          <el-popconfirm v-if="user.role === 1" title="确认删除吗?" @confirm="handleDelete(scope.row.id)">
+          <el-popconfirm title="确认删除吗?" @confirm="handleDelete(scope.row.id)">
             <template #reference>
               <el-button size="mini" type="danger">删除</el-button>
             </template>
           </el-popconfirm>
-
-          <el-button v-if="user.role === 2" size="mini" @click="handleBuy(scope.row)">购买</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -77,11 +69,6 @@
         <el-form-item label="出版时间">
           <el-date-picker v-model="form.createTime" style="width: 80%" clearable value-format="YYYY-MM-DD" type="date"></el-date-picker>
         </el-form-item>
-        <el-form-item label="封面">
-          <el-upload ref="upload" :action="uploadUrl" :on-success="filesUploadSuccess">
-            <el-button size="small" type="primary">Click to upload</el-button>
-          </el-upload>
-        </el-form-item>
       </el-form>
       <template #footer>
       <span class="dialog-footer">
@@ -91,24 +78,8 @@
       </template>
     </el-dialog>
 
-    <el-dialog center v-model="buyDialogVisible" title="确认订单" width="50%">
-      <div style="font-size: large; text-align: center">商品名称：{{rowInfo.name}}</div>
-      <div style="font-size: large; text-align: center">商品价格：{{rowInfo.price}}</div>
-      <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="buyDialogVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="proceedToBuy">Confirm</el-button>
-      </span>
-      </template>
-    </el-dialog>
-
   </div>
 </template>
-
-
-<style>
-
-</style>
 
 
 <script>
@@ -116,7 +87,7 @@
 import request from "@/utils/request";
 
 export default {
-  name: "Book",
+  name: "Order",
   components: {},
 
   data() {
@@ -129,10 +100,7 @@ export default {
       total: 0,
       tableData: [],
       ids: [],
-      user: {},
-      rowInfo: {},
-      orderInfo: {},
-      buyDialogVisible: false
+      user: {}
     }
   },
   created() {
@@ -148,37 +116,6 @@ export default {
     this.load()
   },
   methods: {
-    filesUploadSuccess(res){
-      console.log(res)
-      this.form.cover = res.data
-    },
-    handleBuy(row){
-      this.rowInfo = JSON.parse(JSON.stringify(row))
-      this.orderInfo.category = "Book"
-      this.orderInfo.productId = this.rowInfo.id
-      this.orderInfo.price = this.rowInfo.price
-      this.orderInfo.username = this.user.username
-      this.orderInfo.userId = this.user.id
-      this.buyDialogVisible = true;
-      console.log(this.orderInfo)
-    },
-    proceedToBuy(){
-      request.post("/order", this.orderInfo).then(res =>{
-        console.log(res)
-        if (res.code === '0'){
-          this.$messageBox({
-            type: "success",
-            message: "购买成功"
-          })
-        }
-        else{
-          this.$messageBox({
-            type: "error",
-            message: res.msq
-          })
-        }
-      })
-    },
     handleDelete(id) {
       request.delete("/book/" + id).then(res => {
         console.log(res)

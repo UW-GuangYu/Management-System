@@ -1,16 +1,23 @@
 <template>
-  <div style="width: 100%; height: 100vh; background-color: deepskyblue; overflow: hidden">
+  <div style="width: 100%; height: 100vh; background-color: white; overflow: hidden">
     <div style="width: 400px; margin: 150px auto">
-      <div style="color: white; font-size: 30px; text-align: center; padding: 30px 0">欢迎注册</div>
+      <div style="color: black; font-size: 30px; text-align: center; padding: 30px 0">欢迎注册</div>
       <el-form ref="form" :model="form" :rules="rules">
         <el-form-item prop="username">
           <el-input placeholder="用户名" prefix-icon="el-icon-user-solid" v-model="form.username"></el-input>
+        </el-form-item>
+        <el-form-item prop="nickName">
+          <el-input placeholder="昵称" prefix-icon="el-icon-user-solid" v-model="form.nickName"></el-input>
         </el-form-item>
         <el-form-item prop="password">
           <el-input placeholder="密码" prefix-icon="el-icon-lock" v-model="form.password" show-password></el-input>
         </el-form-item>
         <el-form-item prop="confirm">
           <el-input placeholder="确认密码" prefix-icon="el-icon-lock" v-model="form.confirm" show-password></el-input>
+        </el-form-item>
+        <el-form-item prop="role">
+          <el-radio v-model="form.role" label="1">管理员</el-radio>
+          <el-radio v-model="form.role" label="2">普通用户</el-radio>
         </el-form-item>
         <el-form-item>
           <el-button style="width: 100%" type="primary" @click="register">注册</el-button>
@@ -36,6 +43,13 @@ export default {
             trigger: 'blur'
           }
         ],
+        nickName: [
+          {
+            required: true,
+            message: '请设置昵称',
+            trigger: 'blur'
+          }
+        ],
         password: [
           {
             required: true,
@@ -47,6 +61,13 @@ export default {
           {
             required: true,
             message: '请确认密码',
+            trigger: 'blur'
+          }
+        ],
+        role: [
+          {
+            required: true,
+            message: '请选择用户类型',
             trigger: 'blur'
           }
         ]
