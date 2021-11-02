@@ -10,7 +10,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.util.Date;
 
-@TableName("order")
+@TableName("orders")
 @Data
 public class Order {
     @TableId(type = IdType.AUTO)

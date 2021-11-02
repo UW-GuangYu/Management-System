@@ -177,6 +177,7 @@ export default {
             message: res.msq
           })
         }
+        this.buyDialogVisible = false;
       })
     },
     handleDelete(id) {
@@ -263,9 +264,6 @@ export default {
           this.dialogVisible = false    //关闭弹窗
         })
       } else {     //新增
-        let userStr = sessionStorage.getItem("user") || "{}"
-        let user = JSON.parse(userStr)
-        this.form.userId = user.id
         request.post("/book", this.form).then(res => {
           console.log(res);
           if (res.code === '0') {

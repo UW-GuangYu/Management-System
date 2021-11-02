@@ -23,5 +23,5 @@ public class User {
     private Integer role;
 
     @TableField(exist = false)
-    private ArrayList<Book> bookList;
+    private ArrayList<Order> orderList;
 }

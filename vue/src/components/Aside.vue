@@ -10,7 +10,9 @@
 
       <el-menu-item index="/news">新闻管理</el-menu-item>
 
-      <el-menu-item index="/order">订单管理</el-menu-item>
+      <el-menu-item index="/order" v-if="user.role === 1">订单管理</el-menu-item>
+
+      <el-menu-item index="/myOrder" v-if="user.role === 2">我的订单</el-menu-item>
 
       <el-sub-menu index="1" v-if="user.role === 1">
         <template #title>系统管理</template>

@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.springboot.common.Result;
 import com.example.springboot.entity.Order;
+import com.example.springboot.entity.User;
 import com.example.springboot.mapper.OrderMapper;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,6 +41,17 @@ public class OrderController {
         if (StrUtil.isNotBlank(search)) {
             wrapper.like(Order::getUsername, search);
         }
+        Page<Order> orderPage = orderMapper.selectPage(new Page<>(pageNum, pageSize), wrapper);
+        return Result.success(orderPage);
+    }
+
+    @GetMapping("findOrders")
+    public Result<?> findOrders(@RequestParam(defaultValue = "1") Integer pageNum,
+                              @RequestParam(defaultValue = "10") Integer pageSize,
+                              @RequestParam(defaultValue = "") String search,
+                              @RequestParam Integer userId) {
+        LambdaQueryWrapper<Order> wrapper = Wrappers.<Order>lambdaQuery();
+        wrapper.eq(Order::getUserId, userId).like(Order::getCategory, search);
         Page<Order> orderPage = orderMapper.selectPage(new Page<>(pageNum, pageSize), wrapper);
         return Result.success(orderPage);
     }

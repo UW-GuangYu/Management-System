@@ -22,7 +22,4 @@ public class Book {
     @JsonFormat(pattern="YYYY-MM-dd", timezone="GMT+8")
     private Date createTime;
     private String cover;
-    private String userId;
-    @TableField(exist = false)
-    private String username;
 }

@@ -2,7 +2,7 @@
   <div style="padding: 10px">
 
     <!--      功能区域-->
-    <div v-if="user.role === 1" style="margin: 10px 0">
+    <div style="margin: 10px 0">
       <el-button type="primary" @click="add">新增</el-button>
       <el-popconfirm title="确定删除吗?" @confirm="deleteBatch">
         <template #reference>
@@ -57,16 +57,22 @@
 
     <el-dialog v-model="dialogVisible" title="提示" width="30%">
       <el-form :model="form" label-width="120px">
-        <el-form-item label="名称">
-          <el-input v-model="form.name" style="width: 80%"></el-input>
+        <el-form-item label="商品类型">
+          <el-input v-model="form.category" style="width: 80%"></el-input>
+        </el-form-item>
+        <el-form-item label="商品ID">
+          <el-input v-model="form.productId" style="width: 80%"></el-input>
         </el-form-item>
         <el-form-item label="价格">
           <el-input v-model="form.price" style="width: 80%"></el-input>
         </el-form-item>
-        <el-form-item label="作者">
-          <el-input v-model="form.author" style="width: 80%"></el-input>
+        <el-form-item label="买家姓名">
+          <el-input v-model="form.username" style="width: 80%"></el-input>
         </el-form-item>
-        <el-form-item label="出版时间">
+        <el-form-item label="买家ID">
+          <el-input v-model="form.userId" style="width: 80%"></el-input>
+        </el-form-item>
+        <el-form-item label="下单时间">
           <el-date-picker v-model="form.createTime" style="width: 80%" clearable value-format="YYYY-MM-DD" type="date"></el-date-picker>
         </el-form-item>
       </el-form>
@@ -117,7 +123,7 @@ export default {
   },
   methods: {
     handleDelete(id) {
-      request.delete("/book/" + id).then(res => {
+      request.delete("/order/" + id).then(res => {
         console.log(res)
         if (res.code === '0') {
           this.$messageBox({
@@ -136,9 +142,6 @@ export default {
     handleEdit(row) {
       this.form = JSON.parse(JSON.stringify(row))
       this.dialogVisible = true;
-      this.$nextTick(() =>{
-        this.$refs['upload'].clearFiles()  //清除历史文件列表
-      })
     },
     handleSizeChange(pageSize) {  //改变当前每页的个数时触发
       this.pageSize = pageSize
@@ -150,9 +153,6 @@ export default {
     add() {
       this.dialogVisible = true;
       this.form = {};
-      this.$nextTick(() =>{
-        this.$refs['upload'].clearFiles()  //清除历史文件列表
-      })
     },
     deleteBatch(){
       if (!this.ids.length){
@@ -162,7 +162,7 @@ export default {
         })
         return
       }
-      request.post("/book/deleteBatch", this.ids).then(res =>{
+      request.post("/order/deleteBatch", this.ids).then(res =>{
         if (res.code === '0'){
           this.$messageBox({
             type: "success",
@@ -183,7 +183,7 @@ export default {
     },
     save() {
       if (this.form.id) {  //更新
-        request.put("/book", this.form).then(res => {
+        request.put("/order", this.form).then(res => {
           console.log(res)
           if (res.code === '0') {
             this.$messageBox({
@@ -203,7 +203,7 @@ export default {
         let userStr = sessionStorage.getItem("user") || "{}"
         let user = JSON.parse(userStr)
         this.form.userId = user.id
-        request.post("/book", this.form).then(res => {
+        request.post("/order", this.form).then(res => {
           console.log(res);
           if (res.code === '0') {
             this.$messageBox({
@@ -222,7 +222,7 @@ export default {
       }
     },
     load() {
-      request.get("/book", {
+      request.get("/order", {
         params: {
           pageNum: this.currentPage,
           pageSize: this.pageSize,

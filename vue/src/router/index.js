@@ -19,14 +19,19 @@ const routes = [
                 component: () => import("@/views/News")
             },
             {
-                path: '/user',
-                name: 'User',
-                component: () => import("@/views/User")
-            },
-            {
                 path: '/order',
                 name: 'Order',
                 component: () => import("@/views/Order")
+            },
+            {
+                path: '/myOrder',
+                name: 'MyOrder',
+                component: () => import("@/views/MyOrder")
+            },
+            {
+                path: '/user',
+                name: 'User',
+                component: () => import("@/views/User")
             },
             {
                 path: '/person',
