@@ -16,6 +16,10 @@
           <el-radio v-model="form.sex" label="女">女</el-radio>
           <el-radio v-model="form.sex" label="未知">未知</el-radio>
         </el-form-item>
+        <el-form-item label="身份">
+          <el-radio v-model="form.role" label="1">管理员</el-radio>
+          <el-radio v-model="form.role" label="2">普通用户</el-radio>
+        </el-form-item>
         <el-form-item label="地址">
           <el-input v-model="form.address"></el-input>
         </el-form-item>

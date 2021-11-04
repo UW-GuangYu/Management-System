@@ -20,7 +20,7 @@
 
 
     <el-table :data="tableData" border stripe style="width: 100%" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" />
+      <el-table-column v-if="user.role === 1" type="selection" width="55" />
       <el-table-column prop="id" label="ID" sortable/>
       <el-table-column prop="name" label="名称"/>
       <el-table-column prop="price" label="价格"/>
@@ -128,6 +128,7 @@ export default {
       pageSize: 10,
       total: 0,
       tableData: [],
+      uploadUrl: "http://" + window.server.filesUploadUrl + ":9090/files/upload",
       ids: [],
       user: {},
       rowInfo: {},

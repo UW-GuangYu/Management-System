@@ -20,7 +20,7 @@
 
 
     <el-table :data="tableData" border stripe style="width: 100%" @selection-change="handleSelectionChange">
-      <el-table-column type="selection" width="55" />
+      <el-table-column v-if="user.role === 1" type="selection" width="55" />
       <el-table-column prop="id" label="ID" sortable/>
       <el-table-column prop="title" label="标题"/>
       <el-table-column prop="author" label="作者"/>
