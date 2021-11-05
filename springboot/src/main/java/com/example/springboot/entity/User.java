@@ -22,6 +22,6 @@ public class User {
     private String address;
     private Integer role;
 
-    @TableField(exist = false)
-    private ArrayList<Order> orderList;
+//    @TableField(exist = false)
+//    private ArrayList<Order> orderList;
 }

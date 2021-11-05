@@ -30,7 +30,7 @@
 
       <el-table-column fixed="right" label="操作" >
         <template #default="scope">
-          <el-button size="mini" type="success" @click="showOrders(scope.row.orderList)">查看订单列表</el-button>
+          <el-button size="mini" type="success" @click="showOrders(scope.row.id)">查看订单列表</el-button>
           <el-button size="mini" type="primary" @click="handleEdit(scope.row)">编辑</el-button>
 
           <el-popconfirm title="确认删除吗?" @confirm="handleDelete(scope.row.id)">
@@ -88,7 +88,7 @@
     </el-dialog>
 
     <el-dialog title="用户的订单列表" v-model="orderVis" width="80%">
-      <el-table :data="orderList" stripe border>
+      <el-table :data="orderTableData" stripe border>
         <el-table-column prop="id" label="ID"></el-table-column>
         <el-table-column prop="category" label="类型"/>
         <el-table-column prop="productId" label="产品ID"/>
@@ -125,7 +125,7 @@ export default {
       pageSize: 10,
       total: 0,
       tableData: [],
-      orderList: [],
+      orderTableData: [],
       orderVis: false
     }
   },
@@ -149,8 +149,15 @@ export default {
         this.load()     //删除之后刷新页面数据
       })
     },
-    showOrders(orders){
-      this.orderList = orders
+    showOrders(id){
+      request.get("/user/findOrderList", {
+        params: {
+          userId: id
+        }
+      }).then(res => {
+        console.log(res);
+        this.orderTableData = res.data;
+      })
       this.orderVis = true
     },
     handleEdit(row) {

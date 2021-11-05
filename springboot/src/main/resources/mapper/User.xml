@@ -4,29 +4,28 @@
 
 <mapper namespace="com.example.springboot.mapper.UserMapper">
 
-    <resultMap id="userMap" type="com.example.springboot.entity.User">
-        <result property="id" column="id"/>
-        <result property="username" column="username"/>
-        <result property="password" column="password"/>
-        <result property="nickName" column="nick_name"/>
-        <result property="age" column="age"/>
-        <result property="sex" column="sex"/>
-        <result property="address" column="address"/>
-        <result property="role" column="role"/>
-        <collection property="orderList" javaType="ArrayList" ofType="com.example.springboot.entity.Order">
-            <result property="id" column="order_id"/>
-            <result property="category" column="category"/>
-            <result property="productId" column="product_id"/>
-            <result property="price" column="product_price"/>
-            <result property="username" column="customer_name"/>
-            <result property="userId" column="customer_id"/>
-            <result property="createTime" column="create_time"/>
-        </collection>
-    </resultMap>
+    <!--    <resultMap id="userMap" type="com.example.springboot.entity.User">-->
+    <!--        <result property="id" column="id"/>-->
+    <!--        <result property="username" column="username"/>-->
+    <!--        <result property="password" column="password"/>-->
+    <!--        <result property="nickName" column="nick_name"/>-->
+    <!--        <result property="age" column="age"/>-->
+    <!--        <result property="sex" column="sex"/>-->
+    <!--        <result property="address" column="address"/>-->
+    <!--        <result property="role" column="role"/>-->
+    <!--        <collection property="orderList" javaType="ArrayList" ofType="com.example.springboot.entity.Order">-->
+    <!--            <result property="id" column="order_id"/>-->
+    <!--            <result property="category" column="category"/>-->
+    <!--            <result property="productId" column="product_id"/>-->
+    <!--            <result property="price" column="product_price"/>-->
+    <!--            <result property="username" column="customer_name"/>-->
+    <!--            <result property="userId" column="customer_id"/>-->
+    <!--            <result property="createTime" column="create_time"/>-->
+    <!--        </collection>-->
+    <!--    </resultMap>-->
 
-    <select id="findPage" resultMap="userMap">
-        SELECT `user`.*, orders.id as order_id, orders.category, orders.product_id, orders.price as product_price,
-               orders.username as customer_name, orders.user_id as customer_id, orders.create_time from `user`
-        left join orders on user.id = orders.user_id
+    <select id="findOrderList" resultType="com.example.springboot.entity.Order">
+        SELECT id, category, product_id, price, username, user_id, create_time
+        from orders where user_id=#{userId}
     </select>
 </mapper>

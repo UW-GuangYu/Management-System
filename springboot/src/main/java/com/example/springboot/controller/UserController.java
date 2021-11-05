@@ -5,11 +5,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.springboot.common.Result;
+import com.example.springboot.entity.Order;
 import com.example.springboot.entity.User;
 import com.example.springboot.mapper.UserMapper;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 
 @RestController
@@ -64,17 +66,26 @@ public class UserController {
 
 
     //    数据库--查询操作
+    @GetMapping("/findOrderList")
+    public Result<?> findOrderList(@RequestParam(defaultValue = "") String userId) {
+        List<Order> orderList = userMapper.findOrderList(userId);
+        return Result.success(orderList);
+    }
+
+
     @GetMapping
     public Result<?> findPage(@RequestParam(defaultValue = "1") Integer pageNum,
                               @RequestParam(defaultValue = "10") Integer pageSize,
                               @RequestParam(defaultValue = "") String search) {
         LambdaQueryWrapper<User> wrapper = Wrappers.<User>lambdaQuery();
+
         if (StrUtil.isNotBlank(search)) {
             wrapper.like(User::getNickName, search);
         }
-        Page<User> userPage = userMapper.findPage(new Page<>(pageNum, pageSize));
+        Page<User> userPage = userMapper.selectPage(new Page<>(pageNum, pageSize), wrapper);
         return Result.success(userPage);
     }
+
 
     //    数据库--修改（更新）操作
     @PutMapping
